@@ -28,7 +28,6 @@ productController.createProduct = async (req, res) => {
       status,
     });
 
-    console.log(product);
     await product.save();
     res.status(200).json({ status: "success", product });
   } catch (error) {
@@ -44,7 +43,7 @@ productController.getProduct = async (req, res) => {
     let cond = name ? { name: { $regex: name, $options: "i" } } : {};
     cond = { ...cond, isDeleted: false };
 
-    let query = Product.find(cond);
+    let query = Product.find(cond).sort({ createdAt: -1 });
 
     if (page) {
       query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE);

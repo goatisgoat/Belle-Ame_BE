@@ -2,6 +2,8 @@ const User = require("../model/User");
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 
+require("dotenv").config();
+
 const userController = {};
 
 userController.createUser = async (req, res) => {
@@ -40,6 +42,66 @@ userController.loginWithEmail = async (req, res) => {
       }
     }
     throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
+userController.loginWithGoogle = async (req, res) => {
+  try {
+    const { email, name } = req.body;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      const randomPassword = "" + Math.floor(Math.random() * 1000000000);
+
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const hashPassword = bcrypt.hashSync(randomPassword, salt);
+
+      user = new User({
+        email,
+        name,
+        password: hashPassword,
+        level: "customer",
+      });
+
+      await user.save();
+    }
+
+    const token = user.generateToken();
+
+    return res.status(200).json({ status: "success", user, token });
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
+userController.loginWithKakao = async (req, res) => {
+  try {
+    const { email, name } = req.body;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      const randomPassword = "" + Math.floor(Math.random() * 1000000000);
+
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const hashPassword = bcrypt.hashSync(randomPassword, salt);
+
+      user = new User({
+        email,
+        name,
+        password: hashPassword,
+        level: "customer",
+      });
+
+      await user.save();
+    }
+
+    const token = user.generateToken();
+
+    return res.status(200).json({ status: "success", user, token });
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }

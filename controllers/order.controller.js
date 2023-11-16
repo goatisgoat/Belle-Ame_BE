@@ -67,13 +67,10 @@ orderController.getAllUsersOrder = async (req, res) => {
   try {
     const { page, name, PAGE_SIZE } = req.query;
 
-    console.log(page, name, PAGE_SIZE);
-
     let response = { status: "success" };
 
     let cond = name ? { orderNum: { $regex: name, $options: "i" } } : {};
 
-    console.log(cond, "cond");
     let query = Order.find(cond)
       .populate({
         path: "items",
@@ -93,7 +90,6 @@ orderController.getAllUsersOrder = async (req, res) => {
       const totalPageNum = await Order.find(cond).count();
       const totalDivided = Math.ceil(totalPageNum / PAGE_SIZE);
 
-      console.log(totalDivided, "totalDivided");
       response.totalPageNum = totalDivided;
     }
 
