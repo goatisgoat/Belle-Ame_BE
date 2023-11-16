@@ -123,7 +123,6 @@ cartController.getCartItemLength = async (req, res) => {
       throw new Error("아이템이 존재하지 않습니디.");
     }
 
-    console.log(cart.items);
     res.status(200).json({ status: "success", cartLength: cart.items.length });
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
