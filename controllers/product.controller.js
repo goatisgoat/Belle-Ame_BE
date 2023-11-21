@@ -4,6 +4,8 @@ const productController = {};
 
 productController.createProduct = async (req, res) => {
   try {
+    const newAccessToken = req.body.newAccessToken;
+
     const {
       sku,
       name,
@@ -29,7 +31,14 @@ productController.createProduct = async (req, res) => {
     });
 
     await product.save();
-    res.status(200).json({ status: "success", product });
+
+    const resultStatus = {
+      status: "success",
+      product,
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(resultStatus);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -68,6 +77,8 @@ productController.getProduct = async (req, res) => {
 
 productController.updateProduct = async (req, res) => {
   try {
+    const newAccessToken = req.body.newAccessToken;
+
     const productId = req.params.id;
     const {
       sku,
@@ -88,7 +99,14 @@ productController.updateProduct = async (req, res) => {
     );
 
     if (!product) throw new Error("상품이 존재하지 않습니다.");
-    res.status(200).json({ status: "success", product });
+
+    const resultStatus = {
+      status: "success",
+      product,
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(resultStatus);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -97,6 +115,7 @@ productController.updateProduct = async (req, res) => {
 productController.deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id;
+    const newAccessToken = req.body.newAccessToken;
 
     const product = await Product.findByIdAndUpdate(
       { _id: productId },
@@ -104,7 +123,15 @@ productController.deleteProduct = async (req, res) => {
     );
 
     if (!product) throw new Error("상품이 존재하지 않습니다.");
-    res.status(200).json({ status: "success", product });
+
+    const status = {
+      status: "success",
+      product,
+    };
+
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }

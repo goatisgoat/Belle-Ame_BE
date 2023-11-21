@@ -7,6 +7,7 @@ const orderController = {};
 orderController.createOrder = async (req, res) => {
   try {
     const id = req.body.userId;
+    const newAccessToken = req.body.newAccessToken;
 
     const { totalPrice, shipTo, contact, orderList } = req.body;
 
@@ -33,7 +34,14 @@ orderController.createOrder = async (req, res) => {
     });
 
     await newOrder.save();
-    res.status(200).json({ status: "success", orderNum: newOrder.orderNum });
+
+    const status = {
+      status: "success",
+      orderNum: newOrder.orderNum,
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -42,6 +50,7 @@ orderController.createOrder = async (req, res) => {
 orderController.getOrder = async (req, res) => {
   try {
     const id = req.body.userId;
+    const newAccessToken = req.body.newAccessToken;
 
     const order = await Order.find({ userId: id })
       .populate({
@@ -57,7 +66,13 @@ orderController.getOrder = async (req, res) => {
       throw new Error("주문목록이 존재하지 않습니디.");
     }
 
-    res.status(200).json({ status: "success", order });
+    const status = {
+      status: "success",
+      order,
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -65,9 +80,11 @@ orderController.getOrder = async (req, res) => {
 
 orderController.getAllUsersOrder = async (req, res) => {
   try {
+    const newAccessToken = req.body.newAccessToken;
+
     const { page, name, PAGE_SIZE } = req.query;
 
-    let response = { status: "success" };
+    let status = { status: "success" };
 
     let cond = name ? { orderNum: { $regex: name, $options: "i" } } : {};
 
@@ -90,7 +107,7 @@ orderController.getAllUsersOrder = async (req, res) => {
       const totalPageNum = await Order.find(cond).count();
       const totalDivided = Math.ceil(totalPageNum / PAGE_SIZE);
 
-      response.totalPageNum = totalDivided;
+      status.totalPageNum = totalDivided;
     }
 
     const allUsersOrder = await query.exec();
@@ -98,8 +115,13 @@ orderController.getAllUsersOrder = async (req, res) => {
     if (!allUsersOrder) {
       throw new Error("주문목록이 존재하지 않습니디.");
     }
-    response.allUsersOrder = allUsersOrder;
-    res.status(200).json(response);
+    status.allUsersOrder = allUsersOrder;
+
+    //에러핸들링
+
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -107,18 +129,26 @@ orderController.getAllUsersOrder = async (req, res) => {
 
 orderController.updateOrderStatus = async (req, res) => {
   try {
-    const { status, orderId } = req.body;
+    const orderStatus = req.body.status;
+    const orderId = req.body.orderId;
+    const newAccessToken = req.body.newAccessToken;
 
     const order = await Order.updateOne(
       { _id: orderId },
-      { $set: { status: status } }
+      { $set: { status: orderStatus } }
     );
 
     if (!order) {
       throw new Error("주문목록이 존재하지 않습니디.");
     }
 
-    res.status(200).json({ status: "success", order });
+    const status = {
+      status: "success",
+      order,
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }

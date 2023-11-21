@@ -25,10 +25,16 @@ userSchema.methods.toJSON = function () {
 };
 
 userSchema.methods.generateToken = function () {
-  const token = jwt.sign({ _id: this._id }, JWT_SECRET_KEY, {
-    expiresIn: "1d",
+  const accessToken = jwt.sign({ _id: this._id }, JWT_SECRET_KEY, {
+    expiresIn: "10s",
   });
-  return token;
+  return accessToken;
+};
+
+userSchema.methods.generateRefreshToken = function () {
+  const refreshToken = jwt.sign({}, JWT_SECRET_KEY, { expiresIn: "1d" });
+
+  return refreshToken;
 };
 
 const User = mongoose.model("User", userSchema);

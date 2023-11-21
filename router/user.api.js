@@ -10,8 +10,10 @@ router.post(
   authController.authGoogle,
   userController.loginWithGoogle
 );
+
 router.post("/kakao", authController.authKakao, userController.loginWithKakao);
 
 router.get("/auth/me", authController.authenticate, userController.getUser);
+router.get("/token", authController.deleteToken);
 
 module.exports = router;

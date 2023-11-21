@@ -5,6 +5,7 @@ const cartController = {};
 cartController.createItemCart = async (req, res) => {
   try {
     const id = req.body.userId;
+    const newAccessToken = req.body.newAccessToken;
 
     const { productId, size, qty } = req.body;
 
@@ -28,9 +29,15 @@ cartController.createItemCart = async (req, res) => {
 
     await cart.save();
 
-    res
-      .status(200)
-      .json({ status: "success", cart, cartItemLength: cart.items.length });
+    //에러핸들링
+    const status = {
+      status: "success",
+      cart,
+      cartItemLength: cart.items.length,
+    };
+
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -39,6 +46,7 @@ cartController.createItemCart = async (req, res) => {
 cartController.getCartItem = async (req, res) => {
   try {
     const id = req.body.userId;
+    const newAccessToken = req.body.newAccessToken;
 
     const cart = await Cart.findOne({ userId: id }).populate({
       path: "items",
@@ -52,7 +60,13 @@ cartController.getCartItem = async (req, res) => {
       throw new Error("아이템이 존재하지 않습니디.");
     }
 
-    res.status(200).json({ status: "success", cart });
+    //에러핸들링
+    const status = {
+      status: "success",
+      cart,
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -61,6 +75,7 @@ cartController.getCartItem = async (req, res) => {
 cartController.updateItem = async (req, res) => {
   try {
     const id = req.body.userId;
+    const newAccessToken = req.body.newAccessToken;
 
     const { cartId, type } = req.body;
 
@@ -84,7 +99,13 @@ cartController.updateItem = async (req, res) => {
       throw new Error("업데이트에 실패했습니다.");
     }
 
-    res.status(200).json({ status: "success" });
+    //에러핸들링
+    const status = {
+      status: "success",
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -93,6 +114,7 @@ cartController.updateItem = async (req, res) => {
 cartController.deleteItem = async (req, res) => {
   try {
     const id = req.body.userId;
+    const newAccessToken = req.body.newAccessToken;
 
     const { cartId } = req.body;
 
@@ -107,7 +129,13 @@ cartController.deleteItem = async (req, res) => {
       throw new Error("업데이트에 실패했습니다.");
     }
 
-    res.status(200).json({ status: "success" });
+    //에러핸들링
+    const status = {
+      status: "success",
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
@@ -116,6 +144,7 @@ cartController.deleteItem = async (req, res) => {
 cartController.getCartItemLength = async (req, res) => {
   try {
     const id = req.body.userId;
+    const newAccessToken = req.body.newAccessToken;
 
     const cart = await Cart.findOne({ userId: id });
 
@@ -123,7 +152,14 @@ cartController.getCartItemLength = async (req, res) => {
       throw new Error("아이템이 존재하지 않습니디.");
     }
 
-    res.status(200).json({ status: "success", cartLength: cart.items.length });
+    //에러핸들링
+    const status = {
+      status: "success",
+      cartLength: cart.items.length,
+    };
+    if (newAccessToken) status.newAccessToken = newAccessToken;
+
+    res.status(200).json(status);
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
