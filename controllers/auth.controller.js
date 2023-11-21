@@ -32,6 +32,7 @@ authController.authenticate = async (req, res, next) => {
       throw error;
     }
 
+    //테스트
     // 유효성 검증
     const isAccessTokenValid = authController.validateAccessToken(accessString);
     const isRefreshTokenValid =
